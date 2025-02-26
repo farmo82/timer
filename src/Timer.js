@@ -11,48 +11,70 @@ class Timer extends React.Component{  //component
     constructor(){
       super();
       this.state = {
-        time: 10
+        hour: 0,
+        minute: 0,
+        seconde:0, 
+        isStart: false
       }
     }
 
     startInterval = ()=>{
-      interval = setInterval(()=>{ //interval برای تغییر state
+      if (this.state.isStart == false) {
         this.setState({
-          time: this.state.time - 1
+          isStart: true
         })
-      }, 1000)
+        interval = setInterval(()=>{ //interval برای تغییر state
+          this.setState({
+            seconde: this.state.seconde + 1
+          })
+          if (this.state.seconde == 60) {
+            this.setState({
+              seconde: 0,
+              minute: this.state.minute + 1
+            })
+          }
+          if (this.state.minute == 60) {
+            this.setState({
+              minute: 0,
+              hour: this.state.hour + 1
+            })
+          }
+        }, 1000)
+      }
     }
 
     stopInterval = ()=>{
+      this.setState({
+        isStart: false
+      })
       clearInterval(interval);
     }
 
-    componentDidMount(){  //یک بار اول کار میسازه
-      this.startInterval();
-
+    resetInterval = ()=>{
+      this.stopInterval();
+      this.setState({
+        hour: 0,
+        minute: 0,
+        seconde:0
+      })
     }
 
-    componentDidUpdate(){
-        if (this.state.time == 0){  //وقتی به این زمان رسید تایمر متوقف میشود
-            this.stopInterval();
-        }
-    }
-
-    componentWillUnmount(){
-        
-    }
-  
     render(){
+      let h = this.state.hour;
+      let m = this.state.minute;
+      let s = this.state.seconde;
+
       return(
         <>
           <h2 className='timer'>
-            {this.state.time}
+            {/* {this.state.hour + ":" + this.state.minute + ":" + this.state.seconde} */}
+            {`${h > 9 ? h : "0"+h} : ${m > 9 ? m : "0"+m} : ${s > 9 ? s : "0"+s}`}
           </h2>
           
           <div className='botton_box'>
             <span className='action_button start_button' onClick={this.startInterval}>start</span>
             <span className='action_button stop_button' onClick={this.stopInterval}>stop</span>
-            <span className='action_button reset_button'>reset</span>
+            <span className='action_button reset_button' onClick={this.resetInterval}>reset</span>
           </div>
         </>
       )
